@@ -147,7 +147,7 @@ const soraCommand = require('./commands/sora');
 global.packname = settings.packname;
 global.author = settings.author;
 global.channelLink = "https://whatsapp.com/channel/0029Va90zAnIHphOuO8Msp3A";
-global.ytch = "Mr Unique Hacker";
+global.ytch = "Hafeez Baloch";
 
 // Add this near the top of main.js with other global configurations
 const channelInfo = {
@@ -156,7 +156,7 @@ const channelInfo = {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363161513685998@newsletter',
-            newsletterName: 'KnightBot MD',
+            newsletterName: 'HafeezBot MD',
             serverMessageId: -1
         }
     }
@@ -296,7 +296,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
         }
 
         // Then check for command prefix
-        if (!userMessage.startsWith('.')) {
+        if (!userMessage.startsWith('')) {
             // Show typing indicator if autotyping is enabled
             await handleAutotypingForMessage(sock, chatId, userMessage);
 
@@ -318,11 +318,11 @@ async function handleMessages(sock, messageUpdate, printLog) {
         }
 
         // List of admin commands
-        const adminCommands = ['.mute', '.unmute', '.ban', '.unban', '.promote', '.demote', '.kick', '.tagall', '.tagnotadmin', '.hidetag', '.antilink', '.antitag', '.setgdesc', '.setgname', '.setgpp'];
+        const adminCommands = ['mute', 'unmute', 'ban', 'unban', 'promote', 'demote', 'kick', 'tagall', 'tagnotadmin', 'hidetag', 'antilink', 'antitag', 'setgdesc', 'setgname', 'setgpp'];
         const isAdminCommand = adminCommands.some(cmd => userMessage.startsWith(cmd));
 
         // List of owner commands
-        const ownerCommands = ['.mode', '.autostatus', '.antidelete', '.cleartmp', '.setpp', '.clearsession', '.areact', '.autoreact', '.autotyping', '.autoread', '.pmblocker'];
+        const ownerCommands = ['.mode', 'autostatus', 'antidelete', 'cleartmp', 'setpp', 'clearsession', 'areact', 'autoreact', 'autotyping', 'autoread', 'pmblocker'];
         const isOwnerCommand = ownerCommands.some(cmd => userMessage.startsWith(cmd));
 
         let isSenderAdmin = false;
