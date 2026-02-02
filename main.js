@@ -66,6 +66,7 @@ const tagNotAdminCommand = require('./commands/tagnotadmin');
 const hideTagCommand = require('./commands/hidetag');
 const jokeCommand = require('./commands/joke');
 const quoteCommand = require('./commands/quote');
+const birdhitCommand= require('./commands/birdhit');
 const factCommand = require('./commands/fact');
 const weatherCommand = require('./commands/weather');
 const newsCommand = require('./commands/news');
@@ -73,6 +74,7 @@ const kickCommand = require('./commands/kick');
 const simageCommand = require('./commands/simage');
 const attpCommand = require('./commands/attp');
 const { startHangman, guessLetter } = require('./commands/hangman');
+const { birdhit, bh } = require('./commands/birdhit')
 const { startTrivia, answerTrivia } = require('./commands/trivia');
 const { complimentCommand } = require('./commands/compliment');
 const { insultCommand } = require('./commands/insult');
@@ -91,7 +93,7 @@ const { handleAntiBadwordCommand, handleBadwordDetection } = require('./lib/anti
 const antibadwordCommand = require('./commands/antibadword');
 const { handleChatbotCommand, handleChatbotResponse } = require('./commands/chatbot');
 const takeCommand = require('./commands/take');
-const { flirtCommand } = require('./commands/flirt');
+const { flirtComand } = require('./commands/flirt');
 const characterCommand = require('./commands/character');
 const wastedCommand = require('./commands/wasted');
 const shipCommand = require('./commands/ship');
@@ -408,7 +410,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 }
                 await banCommand(sock, chatId, message);
                 break;
-            case userMessage.startsWith('.unban'):
+            case userMessage.startsWith('unban'):
                 if (!isGroup) {
                     if (!message.key.fromMe && !senderIsSudo) {
                         await sock.sendMessage(chatId, { text: 'Only owner/sudo can use unban in private chat.' }, { quoted: message });
@@ -618,6 +620,10 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 break;
             case userMessage.startsWith('trivia'):
                 startTrivia(sock, chatId);
+                break;
+            case userMessage.startsWith('.birdhit'):
+                const text = rawText.split(' ').slice(1).join(' ');
+                await birdhitCommand(sock, chatId, message, text);
                 break;
             case userMessage.startsWith('answer'):
                 const answer = userMessage.split(' ').slice(1).join(' ');
