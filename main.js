@@ -170,6 +170,26 @@ async function handleMessages(sock, messageUpdate, printLog) {
         const message = messages[0];
         if (!message?.message) return;
 
+        require('dotenv').config();
+
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+async function gemini(prompt) {
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+}
+
+// create socket
+const sock = makeWASocket({...});
+
+// attach once
+sock.gemini = gemini;
+
+
+        
         // Handle autoread functionality
         await handleAutoread(sock, message);
 
