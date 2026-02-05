@@ -1,6 +1,6 @@
 /**
- * Knight Bot - A WhatsApp Bot
- * Copyright (c) 2024 Professor
+ * Baloch Bot - A WhatsApp Bot
+ * Copyright (c) 2025 Baloch
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the MIT License.
@@ -89,7 +89,7 @@ setInterval(() => {
 let phoneNumber = "923003534702"
 let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
 
-global.botname = "HAFEEZ BOT"
+global.botname = "BALOCH BOT"
 global.themeemoji = "•"
 const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
 const useMobile = process.argv.includes("--mobile")
@@ -291,7 +291,7 @@ XeonBotInc.gemini = gemini;
                         isForwarded: true,
                         forwardedNewsletterMessageInfo: {
                             newsletterJid: '923003534702@newsletter',
-                            newsletterName: 'hAFEEZ  Bot MD',
+                            newsletterName: 'BALOCH  Bot MD',
                             serverMessageId: -1
                         }
                     }
@@ -303,8 +303,8 @@ XeonBotInc.gemini = gemini;
             await delay(1999)
             console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'hafeez BOT'} ]`)}\n\n`))
             console.log(chalk.cyan(`< ================================================== >`))
-            console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: hafeez baloch`))
-            console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: HAFEEZBALOCHEE`))
+            console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: baloch baloch`))
+            console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: hafeezbalochee`))
             console.log(chalk.magenta(`${global.themeemoji || '•'} WA NUMBER: ${owner}`))
             console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: hafeez baloch`))
             console.log(chalk.green(`${global.themeemoji || '•'} 🤖 Bot Connected Successfully! ✅`))
