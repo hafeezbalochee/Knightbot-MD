@@ -1,57 +1,54 @@
 async function birdhit(sock, message, args) {
   const chatId = message.key.remoteJid;
-  const input = args.join(' ').trim();
+  const rawText = args.join(' ').trim();
 
-  if (!input) {
+  if (!rawText) {
     return sock.sendMessage(
       chatId,
-      { text: '❗ Usage: .birdhit <incident details>' },
+      { text: '❗ USAGE:\n.bh <BIRD HIT DETAILS>' },
       { quoted: message }
     );
   }
 
-  // Simple keyword extraction (safe & offline)
-  const runwayMatch = input.match(/runway\s?(\w+)/i);
-  const aircraftMatch = input.match(/aircraft\s?([a-z0-9\-]+)/i);
-  const phase =
-    /landing/i.test(input) ? 'Landing Roll' :
-    /takeoff/i.test(input) ? 'Takeoff Roll' :
-    'Unknown';
+  // Extract value
+  const getValue = (label) => {
+    const regex = new RegExp(`${label}\\s*:\\s*(.+)`, 'i');
+    const match = rawText.match(regex);
+    return match ? match[1].trim().toUpperCase() : null;
+  };
 
-  const runway = runwayMatch ? runwayMatch[1].toUpperCase() : 'Not specified';
-  const aircraft = aircraftMatch ? aircraftMatch[1].toUpperCase() : 'Not specified';
+  // Build report line only if value exists
+  const line = (title, value) => value ? `**${title}**\n${value}\n\n` : '';
 
-  const report = `
-📢 *OFFICIAL BIRD HIT INCIDENT REPORT* ✈️
+  let report = `✈️ *BIRD HIT INCIDENT REPORT* ✈️
+━━━━━━━━━━━━━━━━━━━━━━
 
-**Airport:** Karachi International Airport (OPKC)  
-**Date/Time:** ${new Date().toLocaleString()}  
-**Aircraft Type:** ${aircraft}  
-**Runway:** ${runway}  
-**Phase of Flight:** ${phase}  
+`;
 
-**Incident Description:**  
-${input}
+  report += line('INFORMATION RECEIVED FROM', getValue('InfoFrom'));
+  report += line('REPORTING TIME', getValue('Reporting Time'));
+  report += line('CALL SIGN', getValue('CallSign'));
+  report += line('AIRCRAFT TYPE', getValue('Type'));
+  report += line('REGISTRATION', getValue('Reg'));
+  report += line('ORIGIN', getValue('Origin'));
+  report += line('DESTINATION', getValue('Destination'));
+  report += line('ETA', getValue('ETA'));
+  report += line('ATA', getValue('ATA'));
+  report += line('ATD', getValue('ATD'));
+  report += line('PHASE OF FLIGHT', getValue('Phase'));
+  report += line('RUNWAY', getValue('Runway'));
+  report += line('RUNWAY STATUS', getValue('Runway Status'));
+  report += line('HEIGHT', getValue('Height'));
+  report += line('AIRCRAFT ENGINEER', getValue('Engineer'));
+  report += line('ENGINEER LICENSE NO', getValue('Lic'));
+  report += line('OBSERVATION', getValue('Observation'));
 
-**Immediate Action Taken:**  
-🛠️ Aircraft inspection initiated by engineering team.
-
-**Operational Impact:**  
-⚠️ No immediate operational hazard reported.
-
-**Safety Assessment:**  
-✅ Flight safety maintained. Continuous monitoring advised.
-
-**Report Status:**  
-📄 Logged for safety review and wildlife hazard mitigation.
-
-—  
-*Aviation Safety & Operations*
-`.trim();
+  report += `━━━━━━━━━━━━━━━━━━━━━━
+⚠️ *AVIATION SAFETY – KARACHI AIRPORT*`;
 
   await sock.sendMessage(
     chatId,
-    { text: report },
+    { text: report.trim() },
     { quoted: message }
   );
 }
