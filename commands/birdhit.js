@@ -1,90 +1,62 @@
 // commands/birdhit.js
-
-async function birdhit(sock, message) {
+async function birdhit(sock, message, args) {
   const chatId = message.key.remoteJid;
-
-  const text =
-    message.message?.conversation ||
-    message.message?.extendedTextMessage?.text ||
-    '';
-
-  const rawText = text.replace(/^(\.bh|\.birdhit)/i, '').trim();
+  const rawText = args.join(' ').trim();
 
   if (!rawText) {
     return sock.sendMessage(
       chatId,
-      { text: '❗ Usage:\n.bh\nField: Value' },
+      { text: '❗ USAGE:\n.bh\nKey: Value\nKey: Value' },
       { quoted: message }
     );
   }
 
-  // ----------------------------
-  // 🔍 PARSE INPUT
-  // ----------------------------
-  const data = {};
-  rawText.split('\n').forEach(line => {
-    const idx = line.indexOf(':');
-    if (idx !== -1) {
-      const key = line.slice(0, idx).trim();
-      const value = line.slice(idx + 1).trim();
-      if (value) data[key] = value.toUpperCase();
-    }
-  });
+  // 🔹 Extract value from message
+  const getValue = (label) => {
+    const regex = new RegExp(`^${label}\\s*:\\s*(.+)$`, 'im');
+    const match = rawText.match(regex);
+    return match ? match[1].trim().toUpperCase() : null;
+  };
 
-  // ----------------------------
-  // 🧠 HELPERS
-  // ----------------------------
-  const has = (key) => data[key];
-  const line = (label, key) =>
-    has(key) ? `*${label}:* ${data[key]}\n` : '';
+  // 🔹 Show line ONLY if value exists
+  const line = (title, value) =>
+    value ? `*${title}:* ${value}\n` : '';
 
-  // ----------------------------
-  // ✈️ BUILD REPORT
-  // ----------------------------
-  let report = '';
-  report += '✈️ *BIRD HIT INCIDENT REPORT* ✈️\n';
-  report += '━━━━━━━━━━━━━━━━━━━━━━\n';
+  let report = `✈️ *BIRD HIT INCIDENT REPORT* ✈️
+━━━━━━━━━━━━━━━━━━━━━━
+`;
 
-  report += line('INFORMATION RECEIVED FROM', 'InfoFrom');
-  report += line('REPORTING TIME', 'Reporting Time');
+  report += line('INFORMATION RECEIVED FROM', getValue('InfoFrom'));
+  report += line('REPORTING TIME', getValue('Reporting Time'));
 
-  if (report.endsWith('\n')) report += '\n';
+  report += line('CALL SIGN', getValue('CallSign'));
+  report += line('AIRCRAFT TYPE', getValue('Type'));
+  report += line('REGISTRATION', getValue('Reg'));
 
-  report += line('CALL SIGN', 'CallSign');
-  report += line('AIRCRAFT TYPE', 'Type');
-  report += line('REGISTRATION', 'Reg');
+  report += line('ORIGIN', getValue('Origin'));
+  report += line('DESTINATION', getValue('Destination'));
+  report += line('ETA', getValue('ETA'));
+  report += line('ATA', getValue('ATA'));
+  report += line('ATD', getValue('ATD'));
 
-  if (report.endsWith('\n')) report += '\n';
+  report += line('PHASE OF FLIGHT', getValue('Phase'));
+  report += line('RUNWAY', getValue('Runway'));
+  report += line('RUNWAY STATUS', getValue('Runway Status'));
+  report += line('HEIGHT', getValue('Height'));
 
-  report += line('ORIGIN', 'Origin');
-  report += line('DESTINATION', 'Destination');
-  report += line('ETA', 'ETA');
-  report += line('ATA', 'ATA');
-  report += line('ATD', 'ATD');
+  report += line('AIRCRAFT ENGINEER', getValue('Engineer'));
+  report += line('ENGINEER LICENCE NO', getValue('Lic'));
 
-  if (report.endsWith('\n')) report += '\n';
+  report += line('OBSERVATION', getValue('Observation'));
 
-  report += line('PHASE OF FLIGHT', 'Phase');
-  report += line('RUNWAY', 'Runway');
-  report += line('RUNWAY STATUS', 'Runway Status');
-  report += line('HEIGHT', 'Height');
+  report += `━━━━━━━━━━━━━━━━━━━━━━
+⚠️ *AVIATION SAFETY – KARACHI AIRPORT*`;
 
-  if (report.endsWith('\n')) report += '\n';
-
-  report += line('AIRCRAFT ENGINEER', 'Engineer');
-  report += line('ENGINEER LICENCE NO', 'Lic');
-
-  if (report.endsWith('\n')) report += '\n';
-
-  report += line('OBSERVATION', 'Observation');
-
-  report += '━━━━━━━━━━━━━━━━━━━━━━\n';
-  report += '⚠️ *AIRSIDE OPERATIONS OFFICE*';
-
-  await sock.sendMessage(chatId, { text: report }, { quoted: message });
+  await sock.sendMessage(
+    chatId,
+    { text: report.trim() },
+    { quoted: message }
+  );
 }
 
 module.exports = { birdhit };
-
-
-
