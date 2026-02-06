@@ -10,7 +10,6 @@ const settings = {
   storeWriteInterval: 10000,
   description: "This is a bot for managing group commands and automating tasks.",
   version: "3.0.6",
-  updateZipUrl: "https://github.com/mruniquehacker/Hafeezbot-MD/archive/refs/heads/main.zip",
 };
 
 module.exports = settings;
