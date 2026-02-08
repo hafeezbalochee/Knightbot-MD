@@ -9,22 +9,7 @@
  * - Baileys Library by @adiwajshing
  * - Pair Code implementation inspired by TechGod143 & DGXEON
  */
- require('dotenv').config();
-
- const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-async function gemini(prompt) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-  const result = await model.generateContent(prompt);
-  return result.response.text();
-}
-
-
-console.log('Gemini key loaded:', !!process.env.GEMINI_API_KEY);
-
-
+ 
 require('./settings')
 const { Boom } = require('@hapi/boom')
 const fs = require('fs')
@@ -134,11 +119,6 @@ async function startXeonBotInc() {
             connectTimeoutMs: 60000,
             keepAliveIntervalMs: 10000,
         })
-        // 🔥 Attach Gemini AI to socket (THIS IS THE ONLY PLACE)
-XeonBotInc.gemini = gemini;
-
-console.log('✅ Gemini attached to socket:', typeof XeonBotInc.gemini);
-XeonBotInc.gemini = gemini;
 
         // Save credentials when they update
         XeonBotInc.ev.on('creds.update', saveCreds)
