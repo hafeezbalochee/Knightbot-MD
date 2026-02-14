@@ -428,3 +428,12 @@ fs.watchFile(file, () => {
     delete require.cache[file]
     require(file)
 })
+
+// --- KEEP-ALIVE SERVER FOR RENDER ---
+const http = require('http');
+http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('BALOCH BOT is live!');
+}).listen(process.env.PORT || 10000, () => {
+    console.log(chalk.green(`✅ Health check server listening on port ${process.env.PORT || 10000}`));
+});
