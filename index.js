@@ -97,34 +97,61 @@ async function startXeonBotInc() {
         const { state, saveCreds } = await useMultiFileAuthState(`./session`)
         const msgRetryCounterCache = new NodeCache()
 
-        const XeonBotInc = makeWASocket({
-            version,
-            logger: pino({ level: 'silent' }),
-            printQRInTerminal: !pairingCode,
-            browser: ["Ubuntu", "Chrome", "20.0.04"],
-            auth: {
-                creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
-            },
-            markOnlineOnConnect: true,
-            generateHighQualityLinkPreview: true,
-            syncFullHistory: false,
-            getMessage: async (key) => {
-                let jid = jidNormalizedUser(key.remoteJid)
-                let msg = await store.loadMessage(jid, key.id)
-                return msg?.message || ""
-            },
-            msgRetryCounterCache,
-            defaultQueryTimeoutMs: 60000,
-            connectTimeoutMs: 60000,
-            keepAliveIntervalMs: 10000,
-        })
+       const XeonBotInc = makeWASocket({
+    /** * VERSION & LOGGING
+     */
+    version,
+    logger: pino({ level: 'silent' }), // Keeps logs clean on Render
+    printQRInTerminal: !pairingCode,
 
-        // Save credentials when they update
-        XeonBotInc.ev.on('creds.update', saveCreds)
+    /** * AUTHENTICATION & PERFORMANCE
+     */
+    auth: {
+        creds: state.creds,
+        // makeCacheable reduces RAM usage and speeds up message processing
+        keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
+    },
+    
+    /** * BROWSER CONFIG (Crucial for Pairing Code stability)
+     * For 2026, using 'Chrome' on 'Ubuntu' is the most stable fingerprint.
+     */
+    browser: ["Ubuntu", "Chrome", "20.0.04"],
 
-    store.bind(XeonBotInc.ev)
+    /** * CONNECTION STABILITY SETTINGS
+     */
+    markOnlineOnConnect: true,       // Set to false if you want to stay 'Hidden'
+    generateHighQualityLinkPreview: true,
+    syncFullHistory: false,          // Faster startup; set true only if you need old chats
+    defaultQueryTimeoutMs: 0,        // 0 = No timeout (Prevents 'Query Timeout' errors)
+    connectTimeoutMs: 60000,
+    keepAliveIntervalMs: 10000,
 
+    /** * MESSAGE FETCHING & RETRY LOGIC
+     */
+    msgRetryCounterCache,
+    getMessage: async (key) => {
+        let jid = jidNormalizedUser(key.remoteJid)
+        let msg = await store.loadMessage(jid, key.id)
+        return msg?.message || undefined // Better fallback
+    },
+
+    /** * NEW: CACHING FOR GROUPS
+     * Fixes the "Ratelimit" ban risk when sending messages to groups
+     */
+    cachedGroupMetadata: async (jid) => {
+        const metadata = await store.fetchGroupMetadata?.(jid)
+        return metadata
+    }
+})
+
+// --- REQUIRED EVENT LISTENERS ---
+
+// 1. Save credentials when they update (Essential)
+XeonBotInc.ev.on('creds.update', saveCreds)
+
+// 2. Bind the store to handle data persistence
+store.bind(XeonBotInc.ev)
+           
     // Message handling
     XeonBotInc.ev.on('messages.upsert', async chatUpdate => {
         try {
